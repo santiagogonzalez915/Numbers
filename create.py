@@ -7,12 +7,11 @@ def createList(difficulty: int) -> list:
         exit()
         
     nums = sorted((random.sample(range(1, (int) (10 * math.exp(difficulty))), 6)))
-    print("The numbers given are:", nums)
     return nums
 
 def randomOperator(nums: list, operator: int) -> int:
     import random
-    ans = 0
+    
     while True:
         if operator == 0:
             return nums[0] + nums[1]
@@ -26,33 +25,41 @@ def randomOperator(nums: list, operator: int) -> int:
             operator = random.randint(0,2)
 
 
-def solvePuzzle(nums: list, difficulty: int):
+def solvePuzzle(nums: list, difficulty: int) -> int:
     import random 
+    
     steps = 0
     numbers = []
     if difficulty == 1:
         steps = 2
     elif difficulty == 2:
-        steps = 3
+        steps = random.randint(3,4)
     elif difficulty == 3:
         steps = 5
     else:
         exit()
-
+    
     for _ in range(steps):
         numbers = random.sample(nums, 2)
         nums.remove(numbers[0])
         nums.remove(numbers[1])
         nums.append(randomOperator(numbers, random.randint(0, 3)))
-
-    return nums[-1]
+    
+    return int(nums[-1])
 
 def createGame(diff: int):
     import math
     from solver import playerSolve
+    
     nums = createList(diff)
+    old_nums = nums.copy()
     target = solvePuzzle(nums, diff)
+    
     while target >= 10 * math.exp(diff) or target <= 0:
-        target = solvePuzzle(createList(2), 2)
+        nums = createList(diff)
+        old_nums = nums.copy()
+        target = solvePuzzle(nums, diff)
+        
+    print("The given numbers are:", list(old_nums))
     print("The target number is:", target)
     playerSolve(nums, target)
