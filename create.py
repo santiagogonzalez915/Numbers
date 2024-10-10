@@ -47,10 +47,11 @@ def solvePuzzle(nums: list, difficulty: int) -> int:
     
     return int(nums[-1])
 
-def createGame(diff: int):
+def createGame():
     import math
     from solver import playerSolve
     
+    diff = int(input("Choose a difficulty(1 -> easy, 2 -> medium, 3 -> hard): "))
     nums = createList(diff)
     old_nums = nums.copy()
     target = solvePuzzle(nums, diff)
@@ -62,4 +63,4 @@ def createGame(diff: int):
         
     print("The given numbers are:", list(old_nums))
     print("The target number is:", target)
-    playerSolve(nums, target)
+    playerSolve(old_nums, target)
