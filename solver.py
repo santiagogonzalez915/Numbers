@@ -4,12 +4,15 @@ def playerSolve(nums: list, target: int):
     num2 = 0
     operations = ["+", "-", "*", "/"]
     operator = ""
+    completed_steps = []
 
     while ans != target:
         ##Getting user input
         num1 = int(input("Number 1: "))
-        num2 = int(input("Number 2: "))
         operator = input("Operation (use only +, -, *, and /): ")
+        num2 = int(input("Number 2: "))
+        
+        print()
         
         ##Check for valid numbers and operator
         if num1 not in nums or num2 not in nums or operator not in operations: 
@@ -27,6 +30,8 @@ def playerSolve(nums: list, target: int):
         nums.append(performOperation(num1, num2, operator))
         nums = sorted(nums)
         
+        completed_steps.append(f"{num1} {operator} {num2} = {performOperation(num1, num2, operator)}")
+        
         if target in nums:
             ans = target
             break
@@ -34,7 +39,12 @@ def playerSolve(nums: list, target: int):
         print("New List of numbers: ", nums)
     
     print("Congratulations, you finished the puzzle!")
-    return 0
+    print()
+    print("The steps you took were as follows:")
+    print()
+    for i in completed_steps:
+        print(i)
+        
 
 def performOperation(num1: int, num2: int, operation: str) -> int:
     if operation == "+": return num1 + num2
