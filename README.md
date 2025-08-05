@@ -1,8 +1,11 @@
+<details style="display: none;">
+<summary></summary>
 <style>
 h1, h2, h3, h4, h5, h6 {
   color: #6366f1 !important;
 }
 </style>
+</details>
 
 <p align="center">
   <img src="frontend/src/assets/numbers_logo.png" alt="Numbers Game Logo" width="300" />
