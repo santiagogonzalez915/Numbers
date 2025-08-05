@@ -45,8 +45,6 @@ Interestingly enough, the game is also most likely NP-Hard (a proof that I am cu
 git clone <https://github.com/santiagogonzalez915/Numbers>
 cd Numbers
 docker compose up --build
-
-# Now, simply type in http://localhost:3000 to your browser
 ```
 
 ### Access Points
