@@ -1,0 +1,36 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: numbers-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-in-production}
+    volumes:
+      - ./numbers.db:/app/numbers.db
+      - ./backend:/app/backend
+    networks:
+      - numbers-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: numbers-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - numbers-network
+    restart: unless-stopped
+
+networks:
+  numbers-network:
+    driver: bridge
+
+volumes:
+  numbers-db: 
