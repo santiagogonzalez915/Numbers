@@ -16,7 +16,6 @@ from fastapi import Request
 from typing import Optional
 from fastapi.security.utils import get_authorization_scheme_param
 
-# Import local modules
 from core import create  
 from api.models import MoveModel, GameStateModel, ResultModel
 from core.database import SessionLocal, User, UserStats, get_password_hash, verify_password
@@ -35,10 +34,11 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"],
     allow_headers=["*"],
+    max_age=86400,
 )
 
 @app.get("/")
@@ -122,7 +122,9 @@ def make_move(game_id: str, move: MoveModel, current_user: Optional[User] = Depe
         raise HTTPException(status_code=400, detail="Game already completed")
     
     try:
-        result = create.makeMove(state, move.num1, move.num2, move.operation)
+        move_dict = {'num1': move.num1, 'num2': move.num2, 'operation': move.operation}
+        result_tuple = create.applyMove(state, move_dict)
+        result = result_tuple[1]  # Get the new state from the tuple
         games[game_id] = result
         
         # Update user stats if logged in

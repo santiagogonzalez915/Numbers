@@ -1,8 +1,16 @@
+<style>
+h1, h2, h3, h4, h5, h6 {
+  color: #6366f1 !important;
+}
+</style>
+
 <p align="center">
   <img src="frontend/src/assets/numbers_logo.png" alt="Numbers Game Logo" width="300" />
 </p>
 
-This is a personal project that aims to clone the main functionalities of the now defunct Digits game from NYT. Here, you are given 6 different numbers and the goal to combine them in such a way that you end up with the target number. While the project started as a small CLI, it quickly transformed into a fleshed out web project.
+This is a personal project that aims to clone the main functionalities of the now defunct Digits game from NYT. Here, you are given 6 different numbers and the goal to combine them in such a way that you end up with the target number. While the project started as a small CLI, it quickly transformed into a fleshed out web project. This repo provides all of the code used to create the following [website](https://numbers-chi-eight.vercel.app/).
+
+The website is currently being hosted using a combination of Vercel + Railway for the frontend and backend respectively.
 
 Interestingly enough, the game is also most likely NP-Hard (a proof that I am currently working on). If I am able to find a reduction from another known NP-Hard problem, I will update the repository with that proof.
 
@@ -20,6 +28,12 @@ Interestingly enough, the game is also most likely NP-Hard (a proof that I am cu
 - **Move History**: See the previous moves you've made and undo them if you get stuck
 - **Responsive Design**: React + Tailwind gives users the ability to play anywhere, including desktop, mobile, or tablet devices
 
+## Screenshot
+
+<p align="center">
+  <img src="frontend/src/assets/example_page.png" alt="Numbers Game Screenshot" width="600" />
+</p>
+
 ## Quick Start
 
 ### Prerequisites
@@ -36,6 +50,7 @@ docker compose up --build
 ```
 
 ### Access Points
+- **Website:** [https://numbers-chi-eight.vercel.app/](https://numbers-chi-eight.vercel.app/)
 - **Game**: http://localhost:3000
 - **API Docs**: http://localhost:8000/docs
 - **Backend API**: http://localhost:8000
@@ -68,14 +83,6 @@ docker compose logs -f       # View logs
 4. **Compete**: Challenge yourself to beat your best times
 
 
-## Security Features
-
-- **JWT Authentication**: Secure user sessions
-- **Password Hashing**: bcrypt password encryption
-- **CORS Protection**: Configured for production
-- **Input Validation**: Pydantic models for data validation
-- **SQL Injection Protection**: SQLAlchemy ORM
-
 ## Tech Stack
 
 ### Frontend
@@ -92,6 +99,8 @@ docker compose logs -f       # View logs
 - **SQLite**
 
 ### DevOps
+- **Vercel**
+- **Railway**
 - **Docker**
 - **Nginx**
 

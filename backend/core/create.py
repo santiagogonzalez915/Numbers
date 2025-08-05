@@ -102,27 +102,37 @@ def applyMove(state: dict, move: dict) -> tuple:
     completed = state['completed']
     message = None
     valid_ops = ['+', '-', '*', '/']
+    
     if completed:
         return ({'correct': False, 'message': 'Game already completed.', 'new_state': state}, state)
+    
     if num1 not in numbers or num2 not in numbers or operation not in valid_ops:
         message = 'Pick numbers in the list and a valid operator.'
         return ({'correct': False, 'message': message, 'new_state': state}, state)
+    
     if operation == '/' and (num2 == 0 or num1 % num2 != 0):
         message = 'To use divide, pick two divisible numbers.'
         return ({'correct': False, 'message': message, 'new_state': state}, state)
+    
     numbers.remove(num1)
     numbers.remove(num2)
+    
     if operation == '+':
         result = num1 + num2
+        
     elif operation == '-':
         result = num1 - num2
+        
     elif operation == '*':
         result = num1 * num2
+        
     elif operation == '/':
         result = int(num1 / num2)
+        
     numbers.append(result)
     numbers = sorted(numbers)
     steps.append(f"{num1} {operation} {num2} = {result}")
+    
     if target in numbers:
         completed = True
         message = 'Congratulations, you finished the puzzle!'
@@ -134,6 +144,8 @@ def applyMove(state: dict, move: dict) -> tuple:
         'message': message
     }
     new_state['difficulty'] = state.get('difficulty', 1)
+    
     if 'game_id' in state:
         new_state['game_id'] = state['game_id']
+        
     return ({'correct': True, 'message': message or '', 'new_state': new_state}, new_state)

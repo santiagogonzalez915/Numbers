@@ -1,9 +1,5 @@
 import axios from 'axios';
 
-// Debug: Log the API URL to see what's being used
-console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
-console.log('Using baseURL:', import.meta.env.VITE_API_URL || 'http://localhost:8000');
-
 // Create axios instance with base URL from environment variable
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
@@ -31,9 +27,11 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Handle unauthorized access
-      localStorage.removeItem('token');
-      window.location.reload();
+      // Handle unauthorized access - just remove token, don't reload
+      const token = localStorage.getItem('token');
+      if (token && token !== 'guest') {
+        localStorage.removeItem('token');
+      }
     }
     return Promise.reject(error);
   }

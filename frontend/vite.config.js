@@ -5,7 +5,6 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    // Proxy for development - in production, VITE_API_URL will be used
     proxy: {
       '/user': 'http://localhost:8000',
       '/game': 'http://localhost:8000',
