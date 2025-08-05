@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import api from "../api/axios.js";
 
 export default function useGame(token) {
   const [gameState, setGameState] = useState(null);
@@ -19,7 +19,7 @@ export default function useGame(token) {
   }, []);
 
   const getNewGame = useCallback(async (difficulty = 1) => {
-    const response = await axios.post("/game/start", { difficulty });
+    const response = await api.post("/game/start", { difficulty });
     return response.data;
   }, []);
 
@@ -40,11 +40,6 @@ export default function useGame(token) {
   }, [gameState]);
 
   const makeMove = useCallback(async (num1, num2, operation) => {
-    const headers = {};
-    if (token && token !== "guest") {
-      headers["Authorization"] = `Bearer ${token}`;
-    }
-    
     const opMap = {
       '×': '*',
       '÷': '/',
@@ -52,13 +47,13 @@ export default function useGame(token) {
     };
     const convertedOperation = opMap[operation] || operation;
     
-    const response = await axios.post(`/game/${gameId}/move`, {
+    const response = await api.post(`/game/${gameId}/move`, {
       num1,
       num2,
       operation: convertedOperation,
-    }, { headers });
+    });
     return response.data;
-  }, [gameId, token]);
+  }, [gameId]);
 
   const handleNumberClick = async (number) => {
     if (selectedNumber1 === null) {

@@ -16,9 +16,7 @@ from fastapi import Request
 from typing import Optional
 from fastapi.security.utils import get_authorization_scheme_param
 
-# Add the parent directory to Python path for imports
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+# Import local modules
 from core import create  
 from api.models import MoveModel, GameStateModel, ResultModel
 from core.database import SessionLocal, User, UserStats, get_password_hash, verify_password
@@ -97,7 +95,6 @@ def get_token_optional(request: Request):
         return None
     return param
 
-
 def get_current_user_optional(token: str = Depends(get_token_optional)):
     if not token:
         return None
@@ -111,55 +108,40 @@ def get_current_user_optional(token: str = Depends(get_token_optional)):
     db = SessionLocal()
     try:
         user = db.query(User).filter(User.username == username).first()
-        if user is None:
-            return None
         return user
     finally:
         db.close()
 
 @app.post("/game/{game_id}/move", response_model=GameStateModel)
 def make_move(game_id: str, move: MoveModel, current_user: Optional[User] = Depends(get_current_user_optional)):
-    print("move endpoint called with game_id:", game_id)
-    print("games keys:", list(games.keys()))
     state = games.get(game_id)
     if not state:
         raise HTTPException(status_code=404, detail="Game not found")
-    result, new_state = create.applyMove(state, move.dict())
     
-    if not result.get('correct', False):
-        raise HTTPException(status_code=400, detail=result.get('message', 'Invalid move'))
+    if state.get('completed'):
+        raise HTTPException(status_code=400, detail="Game already completed")
     
-    games[game_id] = new_state
-
-    if new_state.get("completed") and current_user:
-        db = SessionLocal()
-        try:
-            user = db.query(User).filter(User.username == current_user.username).first()
-            if user and user.stats:
-                stats = user.stats
-                stats.games_played += 1
-                stats.total_moves += len(new_state.get("steps", []))
-                if new_state.get("won", True):
-                    stats.games_won += 1
-                    stats.current_win_streak += 1
-                    if stats.current_win_streak > stats.longest_win_streak:
-                        stats.longest_win_streak = stats.current_win_streak
-                else:
-                    stats.current_win_streak = 0
-                if stats.games_played > 0:
-                    stats.average_moves = stats.total_moves / stats.games_played
-                time_taken = new_state.get("time", None)
-                if time_taken is not None:
-                    if stats.best_time is None or time_taken < stats.best_time:
-                        stats.best_time = time_taken
-                    prev_total_time = stats.average_time * (stats.games_played - 1)
-                    stats.average_time = (prev_total_time + time_taken) / stats.games_played
-                db.commit()
-        finally:
-            db.close()
-    return GameStateModel(**new_state)
-
-users = {}  
+    try:
+        result = create.makeMove(state, move.num1, move.num2, move.operation)
+        games[game_id] = result
+        
+        # Update user stats if logged in
+        if current_user:
+            db = SessionLocal()
+            try:
+                stats = db.query(UserStats).filter(UserStats.user_id == current_user.id).first()
+                if stats:
+                    stats.games_played += 1
+                    if result.get('completed'):
+                        stats.games_won += 1
+                    stats.total_moves += 1
+                    db.commit()
+            finally:
+                db.close()
+        
+        return GameStateModel(**result)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 class UserRegisterModel(BaseModel):
     username: str
@@ -209,7 +191,6 @@ def get_stats():
         "average_moves": avg_moves
     }
 
-
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -258,3 +239,8 @@ def get_user_stats(current_user: User = Depends(get_current_user)):
         }
     finally:
         db.close()
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port) 

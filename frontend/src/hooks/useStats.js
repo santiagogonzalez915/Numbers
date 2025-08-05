@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import api from "../api/axios.js";
 
 export default function useStats(token) {
   const [stats, setStats] = useState(null);
@@ -13,16 +13,14 @@ export default function useStats(token) {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get("/user/stats", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get("/user/stats");
       setStats(response.data);
     } catch (err) {
       setError(err.response?.data?.detail || "Failed to fetch stats");
     } finally {
       setLoading(false);
     }
-  }, [token, isGuest]);
+  }, [isGuest]);
 
   useEffect(() => {
     if (!isGuest && token) {
